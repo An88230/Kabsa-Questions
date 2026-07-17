@@ -1,0 +1,994 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تفاعلية | كبسة أسئلة - مطعم الخروف</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Cairo -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Cairo', sans-serif;
+            background-color: #0b0a0a;
+            color: #e5e5e5;
+        }
+        /* Custom scrollbar optimized for dark mode */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0b0a0a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #262121;
+            border-radius: 6px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #ffb300;
+        }
+        .red-gold-gradient {
+            background: linear-gradient(135deg, #c31212 0%, #ff9f00 100%);
+        }
+        .red-glow-border:focus {
+            outline: none;
+            border-color: #c31212;
+            box-shadow: 0 0 10px rgba(195, 18, 18, 0.3);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-[#ffb300] selection:text-black">
+
+    <!-- Container for elegant, non-intrusive toast alerts -->
+    <div id="toast-container" class="fixed bottom-6 left-6 z-50 flex flex-col gap-2 pointer-events-none"></div>
+
+    <!-- Header navigation -->
+    <header class="border-b border-stone-900 bg-[#0b0a0a]/90 backdrop-blur-md sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-4">
+                <!-- Branding Badge inspired by Al-Kharof colors -->
+                <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#c31212] to-[#ffb300] p-[2px] flex items-center justify-center shadow-lg shadow-black/50">
+                    <div class="w-full h-full bg-[#0b0a0a] rounded-[14px] flex items-center justify-center text-xl">
+                        🍖
+                    </div>
+                </div>
+                <div>
+                    <h1 class="text-md sm:text-lg font-black text-white tracking-wide flex items-center gap-2">
+                        <span>كَبْسة أسئلَة</span>
+                        <span class="text-xs bg-[#c31212]/20 text-[#ff4d4d] border border-[#c31212]/30 px-2 py-0.5 rounded-md font-normal">لوحة التحكم والنشر</span>
+                    </h1>
+                    <p class="text-[11px] text-stone-400">مطعم الخروف للمأكولات الكويتية</p>
+                </div>
+            </div>
+
+            <!-- Global Action Controls -->
+            <div class="flex items-center gap-2.5">
+                <button onclick="openDateShifterModal()" class="flex items-center gap-1.5 bg-stone-900 hover:bg-stone-800 text-white text-xs font-bold px-3.5 py-2.5 rounded-xl border border-stone-800 transition duration-200">
+                    <span>🗓️</span>
+                    <span class="hidden sm:inline">إعادة جدولة السلسلة</span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Showcase Hero Banner -->
+        <div class="relative overflow-hidden rounded-3xl bg-gradient-to-br from-[#1c1414] via-[#0f0b0b] to-[#0b0a0a] border border-stone-900 p-6 sm:p-8 mb-8">
+            <div class="absolute -right-16 -bottom-16 opacity-5 text-[140px] pointer-events-none">🥩</div>
+            <div class="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+                <div class="space-y-2">
+                    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold bg-[#ffb300]/10 border border-[#ffb300]/20 text-[#ffb300]">
+                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        <span>مكتبة الحلقات الذكية جاهزة للنشر</span>
+                    </div>
+                    <h2 class="text-2xl sm:text-3xl font-black text-white leading-tight">
+                        إدارة محتوى واستراتيجية بث <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#ffb300] to-[#ff4d4d]">«كبسة أسئلة»</span>
+                    </h2>
+                    <p class="text-xs sm:text-sm text-stone-400 max-w-2xl leading-relaxed">
+                        هذه السلسلة ليست مجرد مسابقات ترفيهية عشوائية؛ بل نظام محتوى متكامل تم صياغته بعناية لبناء صلة وثيقة بين مطعم الخروف وعشاق المأكولات الكويتية بالرياض، محولاً الطاولة المجانية لمحتوى يستحق المشاركة والانتشار.
+                    </p>
+                </div>
+
+                <!-- Next Episode Countdown Widget -->
+                <div class="bg-[#141212] border border-stone-900 p-4 rounded-2xl flex flex-col items-center justify-center min-w-[200px] shadow-xl">
+                    <span class="text-[10px] text-stone-400 font-semibold mb-1" id="countdown-label">الوقت المتبقي للبث القادم</span>
+                    <div class="flex items-center gap-1 text-lg font-black text-white tracking-wider" id="countdown-timer">
+                        <span>-- : -- : --</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metric KPI Cards -->
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+            <div class="bg-stone-950/55 border border-stone-900 rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-[11px] text-stone-400 font-semibold">إجمالي الحلقات بالمكتبة</span>
+                <div class="flex items-baseline gap-2 mt-2">
+                    <span class="text-2xl sm:text-3xl font-extrabold text-white">14</span>
+                    <span class="text-xs text-stone-500">حلقة كاملة</span>
+                </div>
+            </div>
+            <div class="bg-stone-950/55 border border-stone-900 rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-[11px] text-[#ff4d4d] font-semibold">متبقي قيد النشر</span>
+                <div class="flex items-baseline gap-2 mt-2">
+                    <span class="text-2xl sm:text-3xl font-extrabold text-[#ff4d4d]" id="scheduled-count">14</span>
+                    <span class="text-xs text-stone-500">مجدول للبث</span>
+                </div>
+            </div>
+            <div class="bg-stone-950/55 border border-stone-900 rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-[11px] text-emerald-400 font-semibold">تم بثها ونشرها</span>
+                <div class="flex items-baseline gap-2 mt-2">
+                    <span class="text-2xl sm:text-3xl font-extrabold text-emerald-400" id="published-count">0</span>
+                    <span class="text-xs text-stone-500">حلقة حية</span>
+                </div>
+            </div>
+            <div class="bg-stone-950/55 border border-stone-900 rounded-2xl p-4 flex flex-col justify-between">
+                <span class="text-[11px] text-[#ffb300] font-semibold">جاهزية الحملة الكلية</span>
+                <div class="mt-2">
+                    <div class="flex justify-between items-center mb-1">
+                        <span class="text-md sm:text-lg font-bold text-white" id="completion-percent">0%</span>
+                        <span class="text-[9px] text-stone-500">معدل الإنجاز</span>
+                    </div>
+                    <div class="w-full bg-stone-900 h-1.5 rounded-full overflow-hidden">
+                        <div id="completion-bar" class="bg-gradient-to-r from-[#c31212] to-[#ffb300] h-full transition-all duration-500" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Dashboard View Switcher Tab System -->
+        <div class="flex border-b border-stone-900 mb-6">
+            <button onclick="switchTab('episodes')" id="tab-btn-episodes" class="px-5 py-3 border-b-2 border-[#ffb300] text-sm font-bold text-white transition">
+                📺 مكتبة الحلقات التفاعلية
+            </button>
+            <button onclick="switchTab('strategy')" id="tab-btn-strategy" class="px-5 py-3 border-b-2 border-transparent text-sm font-semibold text-stone-400 hover:text-white transition">
+                🎯 استراتيجية وبوتوكول النشر والتفاعل
+            </button>
+        </div>
+
+        <!-- VIEW 1: EPISODES LIBRARY (Grid + Detail Inspector) -->
+        <div id="view-episodes" class="space-y-6">
+            <!-- Search, Category & Status Filters -->
+            <div class="bg-stone-950/40 border border-stone-900 rounded-2xl p-4 flex flex-col lg:flex-row items-center justify-between gap-4">
+                <!-- Category Buttons Group -->
+                <div class="flex flex-wrap items-center gap-1.5 w-full lg:w-auto">
+                    <button onclick="filterCategory('الكل')" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold transition duration-200 bg-[#ffb300] text-black" data-cat="الكل">الكل</button>
+                    <button onclick="filterCategory('ديني')" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold transition duration-200 bg-stone-900 text-stone-300 hover:bg-stone-800" data-cat="ديني">🕌 ديني</button>
+                    <button onclick="filterCategory('رياضي')" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold transition duration-200 bg-stone-900 text-stone-300 hover:bg-stone-800" data-cat="رياضي">⚽ رياضي</button>
+                    <button onclick="filterCategory('ألغاز')" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold transition duration-200 bg-stone-900 text-stone-300 hover:bg-stone-800" data-cat="ألغاز">🧠 ألغاز</button>
+                    <button onclick="filterCategory('عامة')" class="cat-btn px-3.5 py-2 rounded-xl text-xs font-bold transition duration-200 bg-stone-900 text-stone-300 hover:bg-stone-800" data-cat="عامة">🌍 عامة</button>
+                </div>
+
+                <!-- Searching and Status Filters -->
+                <div class="flex flex-col sm:flex-row items-center gap-3 w-full lg:w-auto">
+                    <div class="relative w-full sm:w-60">
+                        <input type="text" id="search-input" onkeyup="handleSearch()" placeholder="ابحث في الكابشن أو الهاشتاقات..." class="w-full bg-stone-900 border border-stone-800 rounded-xl px-4 py-2 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#ffb300] placeholder:text-stone-600">
+                        <span class="absolute left-3 top-2.5 text-stone-600 text-xs">🔍</span>
+                    </div>
+                    <select id="status-filter" onchange="handleStatusFilter()" class="w-full sm:w-auto bg-stone-900 border border-stone-800 rounded-xl px-3.5 py-2 text-xs text-stone-300 focus:outline-none focus:ring-1 focus:ring-[#ffb300]">
+                        <option value="الكل">جميع الحالات</option>
+                        <option value="مجدول">مجدول</option>
+                        <option value="تم النشر">تم النشر</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Main Work Split: Left Episodes, Right Inspector -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+                <!-- Episodes Scrollable Grid Area (Left / Span 7) -->
+                <div class="lg:col-span-7 space-y-3">
+                    <div class="flex justify-between items-center px-1">
+                        <span class="text-xs font-bold text-stone-400">حلقات السلسلة</span>
+                        <span id="filtered-badge" class="text-xs text-[#ffb300] font-bold bg-[#ffb300]/10 border border-[#ffb300]/20 px-2.5 py-0.5 rounded-full">14 حلقة</span>
+                    </div>
+
+                    <div id="episodes-wrapper" class="space-y-3 max-h-[750px] overflow-y-auto pr-1">
+                        <!-- Instantly injected by render loop -->
+                    </div>
+                </div>
+
+                <!-- Details Inspector Board (Right / Span 5) -->
+                <div id="inspector-board" class="lg:col-span-5 sticky top-24 bg-[#141212] border border-stone-900 rounded-3xl p-5 shadow-2xl transition duration-300">
+                    <!-- Default Empty State -->
+                    <div id="inspector-empty" class="flex flex-col items-center justify-center py-20 text-center">
+                        <div class="w-16 h-16 bg-stone-900 rounded-2xl flex items-center justify-center mb-4 text-3xl">🎬</div>
+                        <h4 class="text-white font-bold mb-2">معاينة تفاصيل النشر الفورية</h4>
+                        <p class="text-xs text-stone-500 max-w-xs leading-relaxed">
+                            اختر أي حلقة من القائمة المقابلة لاستعراض روابط التحميل، الكابشن المعد للنشر، ونصوص غلاف الحلقة لتسهيل النشر السريع.
+                        </p>
+                    </div>
+
+                    <!-- Active Loaded Inspector State -->
+                    <div id="inspector-loaded" class="hidden flex-col gap-4">
+                        <div class="flex items-start justify-between">
+                            <div>
+                                <span id="insp-cat" class="px-2 py-0.5 rounded-md text-[10px] font-black tracking-wide uppercase bg-[#ffb300]/10 text-[#ffb300] border border-[#ffb300]/20">--</span>
+                                <h4 id="insp-title" class="text-lg font-black text-white mt-1.5 leading-tight">--</h4>
+                            </div>
+                            <!-- State Controller Switcher -->
+                            <div class="flex items-center gap-1 bg-black rounded-xl p-1 border border-stone-900">
+                                <button id="btn-state-sched" onclick="changeStatus('مجدول')" class="px-2.5 py-1.5 rounded-lg text-[9px] font-bold transition">مجدول</button>
+                                <button id="btn-state-pub" onclick="changeStatus('تم النشر')" class="px-2.5 py-1.5 rounded-lg text-[9px] font-bold transition">تم البث</button>
+                            </div>
+                        </div>
+
+                        <!-- Video Assets and Links Download Center -->
+                        <div class="bg-stone-950 border border-stone-900 rounded-2xl p-4 flex flex-col gap-3">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-stone-400 font-bold">ملف الحلقة الأصلي (.mov)</span>
+                                <span class="text-[10px] text-stone-500 flex items-center gap-1">🟢 جاهز للتحميل</span>
+                            </div>
+                            <a id="insp-video-link" href="#" target="_blank" class="flex items-center justify-between bg-[#c31212]/10 hover:bg-[#c31212]/20 border border-[#c31212]/20 px-3.5 py-3 rounded-xl transition duration-150">
+                                <div class="flex items-center gap-2.5">
+                                    <span class="text-xl">📥</span>
+                                    <div class="text-right">
+                                        <p class="text-xs font-bold text-white">تحميل بجودة الإنتاج الكاملة</p>
+                                        <p class="text-[9px] text-stone-500">Google Drive Storage File</p>
+                                    </div>
+                                </div>
+                                <span class="text-xs text-[#ff4d4d] font-bold">رابط الملف ➔</span>
+                            </a>
+                        </div>
+
+                        <!-- Cover image suggestion -->
+                        <div class="flex flex-col gap-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-stone-400 font-bold">نص الغلاف المقترح (Thumbnail Suggestion)</span>
+                                <button onclick="copyFieldText('insp-cover', 'نص غلاف الصورة')" class="text-[10px] font-semibold text-[#ffb300] hover:underline">📋 نسخ</button>
+                            </div>
+                            <div id="insp-cover" class="bg-stone-950 border border-stone-900 rounded-xl p-3 text-xs text-white font-bold leading-relaxed whitespace-pre-wrap select-all">--</div>
+                        </div>
+
+                        <!-- Main Caption Copyboard -->
+                        <div class="flex flex-col gap-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-stone-400 font-bold">نص الكابشن (Instagram & TikTok Caption)</span>
+                                <button onclick="copyFieldText('insp-caption', 'نص الكابشن')" class="text-[10px] font-semibold text-[#ffb300] hover:underline">📋 نسخ الكابشن</button>
+                            </div>
+                            <div id="insp-caption" class="bg-stone-950 border border-stone-900 rounded-xl p-3.5 text-xs text-stone-300 leading-relaxed whitespace-pre-wrap select-all max-h-28 overflow-y-auto">--</div>
+                        </div>
+
+                        <!-- Interactive Call to Action Panel -->
+                        <div class="flex flex-col gap-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-stone-400 font-bold">دعوة اتخاذ الإجراء (CTA)</span>
+                                <button onclick="copyFieldText('insp-cta', 'عبارة CTA')" class="text-[10px] font-semibold text-[#ffb300] hover:underline">📋 نسخ عبارة الـ CTA</button>
+                            </div>
+                            <div id="insp-cta" class="bg-stone-950 border border-stone-900 rounded-xl p-3 text-xs text-[#ff9f00] font-bold leading-relaxed whitespace-pre-wrap select-all">--</div>
+                        </div>
+
+                        <!-- Hashtags copy deck -->
+                        <div class="flex flex-col gap-1.5">
+                            <div class="flex items-center justify-between">
+                                <span class="text-xs text-stone-400 font-bold">الهاشتاقات (Hashtags)</span>
+                                <button onclick="copyFieldText('insp-hash', 'الهاشتاقات')" class="text-[10px] font-semibold text-[#ffb300] hover:underline">📋 نسخ الهاشتاقات</button>
+                            </div>
+                            <div id="insp-hash" class="bg-stone-950 border border-stone-900 rounded-xl p-3 text-xs text-stone-400 font-mono select-all leading-normal">--</div>
+                        </div>
+
+                        <!-- Technical Publishing Specs -->
+                        <div class="grid grid-cols-2 gap-3 pt-2">
+                            <div class="bg-stone-950/45 border border-stone-900 p-2.5 rounded-xl flex flex-col">
+                                <span class="text-[9px] text-stone-500">منصات البث</span>
+                                <span id="insp-platforms" class="text-[10px] font-bold text-white mt-0.5">--</span>
+                            </div>
+                            <div class="bg-stone-950/45 border border-stone-900 p-2.5 rounded-xl flex flex-col">
+                                <span class="text-[9px] text-stone-500">توقيت النشر المعتمد</span>
+                                <span id="insp-datetime" class="text-[10px] font-bold text-white mt-0.5">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- VIEW 2: STRATEGY & PLAYBOOK -->
+        <div id="view-strategy" class="hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Publishing Cadence and Core targets -->
+                <div class="bg-stone-950/40 border border-stone-900 rounded-2xl p-6 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">⚡</span>
+                        <h4 class="text-md font-bold text-white">استراتيجية وإيقاع النشر</h4>
+                    </div>
+                    <p class="text-xs text-stone-400 leading-relaxed">
+                        نشر حلقتين أسبوعياً يمثل المعدل الأنسب للحفاظ على بقاء السلسلة في ذاكرة الجمهور وبناء حالة ترقب طبيعية (Anticipation) ترفع من نسب المشاهدة والتفاعل العضوي.
+                    </p>
+                    <ul class="space-y-3.5 text-xs">
+                        <li class="flex gap-2.5 items-start">
+                            <span class="text-emerald-400 font-bold">✓</span>
+                            <div>
+                                <strong class="text-white block">أيام النشر المعتمدة:</strong>
+                                <span class="text-stone-400">الخميس والجمعة من كل أسبوع.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-2.5 items-start">
+                            <span class="text-emerald-400 font-bold">✓</span>
+                            <div>
+                                <strong class="text-white block">النوافذ الزمنية المقترحة:</strong>
+                                <span class="text-stone-400">بين الساعة 7:00 مساءً والـ 10:00 مساءً بتوقيت الرياض لضمان أعلى معدل تصفح.</span>
+                            </div>
+                        </li>
+                        <li class="flex gap-2.5 items-start">
+                            <span class="text-[#ff9f00] font-bold">✦</span>
+                            <div>
+                                <strong class="text-white block">الهدف الرئيسي للمحتوى:</strong>
+                                <span class="text-stone-400">الربط الذهني للمطعم بالأجواء الاجتماعية الطريفة، مما ينعكس إيجابياً على تكرار الزيارة وتوصيات الأصدقاء.</span>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Interaction Protocol & Engagement Rules -->
+                <div class="bg-stone-950/40 border border-stone-900 rounded-2xl p-6 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <span class="text-2xl">🔥</span>
+                        <h4 class="text-md font-bold text-white">بروتوكول تفاعل وحصد التعليقات</h4>
+                    </div>
+                    <p class="text-xs text-stone-400 leading-relaxed">
+                        القيمة الحقيقية للفيديوهات تتضاعف عبر إدارة التعليقات في الساعات الأولى. اتبع القواعد التالية لبناء خوارزمية تفاعل قوية:
+                    </p>
+                    <div class="space-y-3">
+                        <div class="border-r-2 border-[#ffb300] pr-3 py-1">
+                            <h5 class="text-xs font-bold text-white">قاعدة "الساعة الذهبية الأولى"</h5>
+                            <p class="text-[11px] text-stone-500 mt-1">تفاعل الحساب بالرد على التعليقات الطريفة فوراً خلال أول 60 دقيقة من النشر يضاعف من انتشار الفيديو في الإكسبلور.</p>
+                        </div>
+                        <div class="border-r-2 border-[#c31212] pr-3 py-1">
+                            <h5 class="text-xs font-bold text-white">تثبيت وتكريم الأجوبة الطريفة</h5>
+                            <p class="text-[11px] text-stone-500 mt-1">قم بتثبيت (Pin) أكثر تعليق طريف أو إجابة مثيرة للنقاش لخلق نقاش جانبي حيوي ومرح بين المتابعين.</p>
+                        </div>
+                        <div class="border-r-2 border-stone-800 pr-3 py-1">
+                            <h5 class="text-xs font-bold text-white">إعادة تدوير المحتوى الناجح</h5>
+                            <p class="text-[11px] text-stone-500 mt-1">قم بإعادة نشر (Repost) الحلقات التي حصدت تفاعلاً استثنائياً كقصص (Stories) بعد بضعة أيام مع تشجيع المتابعين الجدد على المشاهدة.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Modal Dialog: Date Recalculator Shifter -->
+    <div id="date-shifter-modal" class="fixed inset-0 z-50 overflow-y-auto hidden" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Overlay dark background -->
+            <div class="fixed inset-0 bg-black/85 backdrop-blur-md transition-opacity" aria-hidden="true" onclick="closeDateShifterModal()"></div>
+
+            <!-- Position centering trick -->
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+
+            <div class="inline-block align-bottom bg-[#120f0f] border border-stone-900 rounded-3xl text-right overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+                <div class="bg-[#120f0f] px-6 pt-6 pb-4">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 bg-[#ffb300]/10 border border-[#ffb300]/20 rounded-xl flex items-center justify-center text-lg">🗓️</div>
+                        <div>
+                            <h3 class="text-sm font-bold text-white leading-6" id="modal-title">إعادة جدولة روزنامة السلسلة</h3>
+                            <p class="text-[11px] text-stone-500 mt-0.5">تعديل تاريخ البدء يرحل كافة التواريخ التالية تلقائياً.</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4 mt-2">
+                        <div class="bg-[#0b0a0a] border border-stone-900 rounded-2xl p-4">
+                            <p class="text-[11px] text-stone-400 leading-relaxed">
+                                تحافظ الخوارزمية تلقائياً على <strong>إيقاع البث المعتمد (الخميس 8:30 مساءً والجمعة 9:00 مساءً)</strong> ولمدة سبعة أسابيع متتالية. قم بتغيير تاريخ البدء (تاريخ أول حلقة) وسيتكفل النظام بالباقي.
+                            </p>
+                        </div>
+
+                        <div>
+                            <label for="new-start-date" class="block text-xs font-semibold text-stone-400 mb-2">تاريخ بث الحلقة الأولى (يفضل يوم خميس):</label>
+                            <input type="date" id="new-start-date" class="w-full bg-[#0b0a0a] border border-stone-900 rounded-xl px-4 py-3 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#ffb300]">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-black/30 px-6 py-4 flex flex-row-reverse gap-3">
+                    <button type="button" onclick="applyDateShift()" class="w-full bg-[#ffb300] hover:bg-[#ffca28] text-black text-xs font-bold py-3 px-4 rounded-xl transition duration-200">
+                        حفظ وتحديث التواريخ
+                    </button>
+                    <button type="button" onclick="closeDateShifterModal()" class="w-full bg-transparent hover:bg-stone-900 border border-stone-800 text-stone-400 text-xs font-bold py-3 px-4 rounded-xl transition duration-200">
+                        إلغاء الأمر
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Master Footer matching client specs -->
+    <footer class="mt-auto border-t border-stone-900 bg-black/60 py-6">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="text-xs text-stone-500 text-center sm:text-right">
+                <span class="text-white font-semibold">«كبسة أسئلة» لوحة محتوى ونشر ذكية لمطعم الخروف للمأكولات الكويتية.</span>
+            </div>
+            <div class="text-[11px] text-stone-600 font-medium tracking-wide">
+                © 2026 Nabil88 | <a href="https://nabil88.art" target="_blank" class="text-stone-500 hover:text-[#ffb300] underline transition">nabil88.art</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Core Application JavaScript Layer -->
+    <script>
+        // 1. Initial Campaign Master Database (Incorporating user's direct links & updated parameters)
+        let campaignData = [
+            {
+                id: 1,
+                title: "الحلقة 01: سؤال واحد وطاولتك علينا!",
+                day: "الخميس",
+                baseOffsetDays: 0,
+                time: "8:30 مساءً",
+                caption: `كل خميس وكل جمعة، سؤال واحد داخل مطعم الخروف… وإذا كانت إجابتك صحيحة، طاولتك علينا. تابعوا «كبسة أسئلة» وجاوبوا قبل ضيوفنا؛ يمكن الدور القادم يكون عليكم.`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #مطاعم_الرياض #مأكولات_كويتية #مسابقات #الرياض`,
+                videoLink: "https://drive.google.com/file/d/1PwuSREtzD92t7mvpUsjrPTAt69957u_r/view?usp=drive_web",
+                category: "عامة",
+                status: "مجدول",
+                coverTitle: "سؤال واحد.. طاولتك علينا! 💰🔥",
+                cta: "شاركونا بالتعليقات: لو سألناكم هالسؤال، وش بتكون إجابتكم؟ 👇",
+                platforms: "Instagram / TikTok / Snapchat"
+            },
+            {
+                id: 2,
+                title: "الحلقة 02: تحدي الكروي ومشاركات المونديال",
+                day: "الجمعة",
+                baseOffsetDays: 1,
+                time: "9:00 مساءً",
+                caption: `قال إنه فنان بالكورة… فجاءه السؤال الذي يثبتها: كم مرة شارك المنتخب السعودي في كأس العالم؟ جاوب قبل أن تكمل الحلقة، وشاهد هل تحولت أول زيارة له إلى طاولة مجانية.`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #المنتخب_السعودي #كأس_العالم #تحدي_كروي #مطاعم_الرياض`,
+                videoLink: "https://drive.google.com/file/d/1NTkdiJUmMcvyMx1kQjzKBjYZxyKnP8Kg/view?usp=drive_web",
+                category: "رياضي",
+                status: "مجدول",
+                coverTitle: "فنان بالكورة؟ ⚽️ كم مشاركة للأخضر؟",
+                cta: "جاوبوا بالتعليقات قبل ما تشوفوا جواب البطل! 👇⚽",
+                platforms: "Instagram / TikTok / Snapchat"
+            },
+            {
+                id: 3,
+                title: "الحلقة 03: سؤال ديني غريب",
+                day: "الخميس",
+                baseOffsetDays: 7,
+                time: "8:30 مساءً",
+                caption: `سؤال ديني، إجابة واحدة، ومن دون ثانية تردد: ما أول طعام لأهل الجنة؟ جرّب تجاوب قبل المتسابق؛ لأنه لم يترك لنا وقتًا حتى نجهّز الخيارات.`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #أسئلة_دينية #معلومات_دينية #مسابقات #مطاعم_الرياض`,
+                videoLink: "https://drive.google.com/file/d/1fXuP_QvbQcOEXFbOUN9oigDweV7blkeE/view?usp=drive_web",
+                category: "ديني",
+                status: "مجدول",
+                coverTitle: "أول طعام لأهل الجنة؟ 🌙 سباق الإجابة!",
+                cta: "اختبروا معلوماتكم الدينية وجاوبوا في التعليقات! 👇🕌",
+                platforms: "Instagram / TikTok / Snapchat"
+            },
+            {
+                id: 4,
+                title: "الحلقة 04: عنكبوت وأنبياء وثقة عالية",
+                day: "الجمعة",
+                baseOffsetDays: 8,
+                time: "9:00 مساءً",
+                caption: `أجاب عن عدد أرجل العنكبوت، ثم طلب سؤالًا ثانيًا بكل ثقة. هل حافظ على انتصاره أمام سؤال «من هو أول نبي؟» أم توقّف الحماس؟ جاوب قبل النهاية.`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #معلومات_عامة #أسئلة_دينية #تحدي #مطاعم_الرياض`,
+                videoLink: "https://drive.google.com/file/d/1Qu1jjOOX15sKA-H17d9FzwiuzmTHbl_v/view?usp=drive_web",
+                category: "ديني",
+                status: "مجدول",
+                coverTitle: "كم رجل للعنكبوت؟ 🕷️ وثقة مهزوزة!",
+                cta: "مين جاب الإجابتين صح مثله؟ اكتبوا لنا بالتعليقات 👇",
+                platforms: "Instagram / TikTok / Snapchat"
+            },
+            {
+                id: 5,
+                title: "الحلقة 05: أطول آية في القرآن",
+                day: "الخميس",
+                baseOffsetDays: 14,
+                time: "8:30 مساءً",
+                caption: `ضمن الطاولة من أول سؤال، لكنه دخل التحدي الثاني: ما أطول آية في القرآن الكريم؟ وكم مرة ذُكر اسم محمد ﷺ؟ اختبر معلوماتك قبل أن تسمع إجابته.`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #القرآن_الكريم #أسئلة_دينية #معلومات_دينية #مطاعم_الرياض`,
+                videoLink: "https://drive.google.com/file/d/1OTDUctdx2Udsi10FMAYi2AmVMeM9k5Uk/view?usp=drive_web",
+                category: "ديني",
+                status: "مجدول",
+                coverTitle: "أطول آية بالقرآن؟ 📖 تحدي الحفظ!",
+                cta: "اكتبوا لنا كم مرة ذُكر اسم نبينا محمد ﷺ بالقرآن بالتعليقات! 👇",
+                platforms: "Instagram / TikTok / Snapchat"
+            },
+            {
+                id: 6,
+                title: "الحلقة 06: اللغز الصعب.. بيت بلا أبواب",
+                day: "الجمعة",
+                baseOffsetDays: 15,
+                time: "9:00 مساءً",
+                caption: `بيت بلا أبواب ولا نوافذ… ما هو؟ الإجابة الأولى ذهبت بعيدًا، لكن الخيارات غيّرت كل شيء. شاهد هل لحق بالطاولة المجانية في الوقت المناسب.`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #ألغاز #تحدي_الذكاء #لغز_اليوم #مطاعم_الرياض`,
+                videoLink: "https://drive.google.com/file/d/1AGsG0RR2jBy1h5LuxdFydE4OBLLbW9q-/view?usp=drive_web",
+                category: "ألغاز",
+                status: "مجدول",
+                coverTitle: "بيت بلا أبواب ونوافذ؟ 🧠 لغز عبقري",
+                cta: "مين عرف اللغز من أول ثانية؟ اعترفوا بالتعليقات 👇🧠",
+                platforms: "Instagram / TikTok / Snapchat"
+            },
+            {
+                id: 7,
+                title: "الحلقة 07: جغرافيا وعواصم أستراليا",
+                day: "الخميس",
+                baseOffsetDays: 21,
+                time: "8:30 مساءً",
+                caption: `سيدني؟ كندا؟ أم كانبرا؟ سؤال عاصمة أستراليا حوّل الطاولة إلى جلسة مفاوضات. جاوب قبل المتسابق وقل لنا: هل كنت تحتاج إلى الخيارات؟`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #معلومات_عامة #عواصم #تحدي #مطاعم_الرياض`,
+                videoLink: "https://drive.google.com/file/d/1tKWar4f3Jphb2B0FelTYgJUEl-etXz3A/view?usp=drive_web",
+                category: "عامة",
+                status: "مجدول",
+                coverTitle: "عاصمة أستراليا؟ 🗺️ مفاوضات الطاولة!",
+                cta: "مين كان يحتاج خيارات مثلهم؟ اعترفوا بالتعليقات 👇🗺️",
+                platforms: "Instagram / TikTok / Snapchat"
+            },
+            {
+                id: 8,
+                title: "الحلقة 08: لغز الست بيضات الشهير",
+                day: "الجمعة",
+                baseOffsetDays: 22,
+                time: "9:00 مساءً",
+                caption: `عندك ست بيضات: كسرت اثنتين، وطبخت اثنتين، وأكلت اثنتين… كم بقي؟ الفخ الأول اشتغل، لكن السؤال الثاني كان له كلام آخر. لا تستعجل الإجابة.`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #ألغاز #لغز_اليوم #تحدي_الذكاء #مطاعم_الرياض`,
+                videoLink: "https://drive.google.com/file/d/13lG45zxaWdFyPjeXeDe52OfsxLhQ_n4J/view?usp=drive_web",
+                category: "ألغاز",
+                status: "مجدول",
+                coverTitle: "لغز الست بيضات! 🍳 كم بقي؟",
+                cta: "لا تغشوا! كم بيضة بقت معكم؟ اكتبوا الإجابة الحقيقية 👇🍳",
+                platforms: "Instagram / TikTok / Snapchat"
+            },
+            {
+                id: 9,
+                title: "الحلقة 09: سورة الفاتحة والهروب من الطرد",
+                day: "الخميس",
+                baseOffsetDays: 28,
+                time: "8:30 مساءً",
+                caption: `قال: إذا لم أجب قد يطردونني من المطعم! ما أول سورة في القرآن الكريم؟ شاهد أسرع إجابة وألطف احتفال بطاولة مجانية.`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #القرآن_الكريم #أسئلة_دينية #مسابقات #مطاعم_الرياض`,
+                videoLink: "https://drive.google.com/file/d/1VwIAA1qZyGEJAVi6tpXQclLQfOF64Ao1/view?usp=drive_web",
+                category: "ديني",
+                status: "مجدول",
+                coverTitle: "أسرع طاولة مجانية! 🏃‍♂️ سورة الفاتحة",
+                cta: "أسرع إجابة مرت علينا! تتوقعون تقدرون تهزمون سرعته؟ 👇",
+                platforms: "Instagram / TikTok / Snapchat"
+            },
+            {
+                id: 10,
+                title: "الحلقة 10: حيرة الخيارات الدينية",
+                day: "الجمعة",
+                baseOffsetDays: 29,
+                time: "9:00 مساءً",
+                caption: `سؤال قرآني سريع بدا سهلًا في البداية، لكن الخيارات زادت الحيرة بدل أن تحلّها. هل وصل الشباب إلى الإجابة الصحيحة؟ جاوب قبل أن تسمع جوابهم.`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #أسئلة_دينية #معلومات_دينية #تحدي #مطاعم_الرياض`,
+                videoLink: "https://drive.google.com/file/d/1cGpie8DgDiBVd6TXSX1x59r8R3fxOMyg/view?usp=drive_web",
+                category: "ديني",
+                status: "مجدول",
+                coverTitle: "الخيارات حيرتهم! 🤔 سؤال قرآني",
+                cta: "جاوبوا قبل لا يخلص المقطع: وش الإجابة الصحيحة برأيكم؟ 👇",
+                platforms: "Instagram / TikTok / Snapchat"
+            },
+            {
+                id: 11,
+                title: "الحلقة 11: تحدي الشعراء والناقة",
+                day: "الخميس",
+                baseOffsetDays: 35,
+                time: "8:30 مساءً",
+                caption: `دخل شاعرًا… فجاءه السؤال عن صوت الناقة. ولما خانته الإجابة، ظهر لغز الست بيضات كفرصة أخيرة. هل أنقذ طاولته؟`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #ألغاز #معلومات_عامة #تحدي #مطاعم_الرياض`,
+                videoLink: "https://drive.google.com/file/d/1L77Nubg-Sav0BPk6DOI1kwfo0xSDJZB7/view?usp=drive_web",
+                category: "ألغاز",
+                status: "مجدول",
+                coverTitle: "صوت الناقة؟ 🐪 فرصة البيضات الأخيرة!",
+                cta: "الشعر يفوز دائمًا! من فيكم يعرف اسم صوت الناقة بدون غوغل؟ 👇",
+                platforms: "Instagram / TikTok / Snapchat"
+            },
+            {
+                id: 12,
+                title: "الحلقة 12: الأخضر وكأس آسيا",
+                day: "الجمعة",
+                baseOffsetDays: 36,
+                time: "9:00 مساءً",
+                caption: `سؤال كروي وجواب من دون تفكير: كم مرة فاز المنتخب السعودي بكأس آسيا؟ جاوب قبل الضيف، وشاهد لماذا قلنا: جهّزوا له أحلى طاولة.`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #المنتخب_السعودي #كأس_آسيا #الأخضر #مطاعم_الرياض`,
+                videoLink: "https://drive.google.com/file/d/1EmlEt8bDvt5R20CSVA2JxnG7Wf_Pl9X9/view?usp=drive_web",
+                category: "رياضي",
+                status: "مجدول",
+                coverTitle: "كم آسيوية للأخضر؟ 🏆 طاولة ذهبية!",
+                cta: "الأخضر دائمًا يجمّعنا! اكتبوا توقعاتكم لبطولة آسيا القادمة 👇🏆",
+                platforms: "Instagram / TikTok / Snapchat"
+            },
+            {
+                id: 13,
+                title: "الحلقة 13: لغز بيت الشعر الخشبي",
+                day: "الخميس",
+                baseOffsetDays: 42,
+                time: "8:30 مساءً",
+                caption: `واضح أن الشعر عندهم حاضر، فغيّرنا المسار إلى لغز: بيت ما له أبواب ولا نوافذ، ما هو؟ الإجابة كانت أسرع من محاولة الهروب.`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #ألغاز #بيت_الشعر #لغز_اليوم #مطاعم_الرياض`,
+                videoLink: "https://drive.google.com/file/d/1H2E81uh3ehVPMHghJoTzSme4w7V7misb/view?usp=drive_web",
+                category: "ألغاز",
+                status: "مجدول",
+                coverTitle: "بيت ما له أبواب؟ 🎪 إجابة خاطفة!",
+                cta: "الألغاز البسيطة هي اللي تدوّخ! مين جابها صح؟ 👇🎪",
+                platforms: "Instagram / TikTok / Snapchat"
+            },
+            {
+                id: 14,
+                title: "الحلقة 14: التحدي الكروي الأخير",
+                day: "الجمعة",
+                baseOffsetDays: 43,
+                time: "9:00 مساءً",
+                caption: `قال إنه كروي، والسؤال جاء مباشرًا: كم مرة فاز الأخضر بكأس آسيا؟ ثوانٍ قليلة كانت كافية لتحديد مصير الطاولة.`,
+                hashtags: `#كبسة_أسئلة #مطعم_الخروف #المنتخب_السعودي #كأس_آسيا #الأخضر #مطاعم_الرياض`,
+                videoLink: "https://drive.google.com/file/d/1Rm1qwLmv8oZdG_44uEKThH8svFzJ4gu2/view?usp=drive_web",
+                category: "رياضي",
+                status: "مجدول",
+                coverTitle: "الفرصة الكروية الأخيرة! ⚽️ هل فازوا؟",
+                cta: "نهاية الموسم الأول! من منكم متحمس للموسم الثاني بمطعم الخروف؟ 👇🔥",
+                platforms: "Instagram / TikTok / Snapchat"
+            }
+        ];
+
+        // 2. Global State Engine
+        let selectedStartDate = new Date("2026-07-23"); // Default Launch Calendar
+        let currentCategoryFilter = "الكل";
+        let currentSearchQuery = "";
+        let currentStatusFilter = "الكل";
+        let activeEpisodeId = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadStateFromStorage();
+            recalculateCampaignDates();
+            renderStats();
+            renderEpisodes();
+            initCountdown();
+        });
+
+        // Tab Switching Engine
+        function switchTab(tabId) {
+            const tabEp = document.getElementById("tab-btn-episodes");
+            const tabStrat = document.getElementById("tab-btn-strategy");
+            const viewEp = document.getElementById("view-episodes");
+            const viewStrat = document.getElementById("view-strategy");
+
+            if (tabId === 'episodes') {
+                tabEp.className = "px-5 py-3 border-b-2 border-[#ffb300] text-sm font-bold text-white transition";
+                tabStrat.className = "px-5 py-3 border-b-2 border-transparent text-sm font-semibold text-stone-400 hover:text-white transition";
+                viewEp.classList.remove("hidden");
+                viewStrat.classList.add("hidden");
+            } else {
+                tabStrat.className = "px-5 py-3 border-b-2 border-[#ffb300] text-sm font-bold text-white transition";
+                tabEp.className = "px-5 py-3 border-b-2 border-transparent text-sm font-semibold text-stone-400 hover:text-white transition";
+                viewStrat.classList.remove("hidden");
+                viewEp.classList.add("hidden");
+            }
+        }
+
+        // 3. Cadence Date Calculator
+        function recalculateCampaignDates() {
+            campaignData.forEach(ep => {
+                let epDate = new Date(selectedStartDate);
+                // Math conversion for day offsets
+                epDate.setDate(selectedStartDate.getDate() + ep.baseOffsetDays);
+                ep.actualDate = epDate;
+            });
+        }
+
+        function getFormattedDate(dateObj) {
+            const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+            return dateObj.toLocaleDateString('ar-EG', options);
+        }
+
+        // 4. Content Render Loops
+        function renderStats() {
+            const total = campaignData.length;
+            const published = campaignData.filter(e => e.status === "تم النشر").length;
+            const scheduled = total - published;
+            const percent = Math.round((published / total) * 100);
+
+            document.getElementById("published-count").textContent = published;
+            document.getElementById("scheduled-count").textContent = scheduled;
+            document.getElementById("completion-percent").textContent = percent + "%";
+            document.getElementById("completion-bar").style.width = percent + "%";
+        }
+
+        function renderEpisodes() {
+            const container = document.getElementById("episodes-wrapper");
+            container.innerHTML = "";
+
+            let filtered = campaignData.filter(ep => {
+                const matchCat = (currentCategoryFilter === "الكل" || ep.category === currentCategoryFilter);
+                const matchStatus = (currentStatusFilter === "الكل" || ep.status === currentStatusFilter);
+                const matchSearch = ep.caption.toLowerCase().includes(currentSearchQuery.toLowerCase()) || 
+                                    ep.title.toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
+                                    ep.coverTitle.toLowerCase().includes(currentSearchQuery.toLowerCase()) ||
+                                    ep.hashtags.toLowerCase().includes(currentSearchQuery.toLowerCase());
+                return matchCat && matchStatus && matchSearch;
+            });
+
+            document.getElementById("filtered-badge").textContent = `${filtered.length} حلقة`;
+
+            if (filtered.length === 0) {
+                container.innerHTML = `
+                    <div class="text-center py-16 bg-stone-950/20 rounded-2xl border border-stone-900">
+                        <p class="text-xs text-stone-500">لا توجد أي نتائج مطابقة لبحثك الحالي.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            filtered.forEach(ep => {
+                const isSelected = ep.id === activeEpisodeId;
+                const isPublished = ep.status === "تم النشر";
+                const dateStr = getFormattedDate(ep.actualDate);
+
+                const cardHtml = `
+                    <div onclick="selectEpisode(${ep.id})" class="group cursor-pointer p-4 rounded-2xl border transition duration-200 ${isSelected ? 'bg-stone-900 border-[#ffb300] shadow-xl' : 'bg-stone-950/35 hover:bg-stone-900/40 border-stone-900'}">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="flex-grow">
+                                <div class="flex flex-wrap items-center gap-1.5 mb-2">
+                                    <span class="text-[9px] font-black px-2 py-0.5 rounded-md ${isPublished ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-[#c31212]/15 text-[#ff4d4d] border border-[#c31212]/20'}">
+                                        ${ep.status}
+                                    </span>
+                                    <span class="text-[9px] font-bold px-2 py-0.5 rounded-md bg-stone-900 border border-stone-850 text-stone-400">
+                                        ${ep.category}
+                                    </span>
+                                    <span class="text-[10px] text-stone-500 mr-auto">
+                                        ${ep.day} • ${ep.time}
+                                    </span>
+                                </div>
+                                <h4 class="text-xs sm:text-sm font-bold text-white group-hover:text-[#ffb300] transition duration-150">${ep.title}</h4>
+                                <p class="text-[11px] text-stone-500 mt-1 line-clamp-1">${ep.caption}</p>
+                            </div>
+                        </div>
+                        <div class="mt-3 pt-2.5 border-t border-stone-900 flex items-center justify-between text-[10px] text-stone-500">
+                            <span class="flex items-center gap-1">
+                                📅 <span>${dateStr}</span>
+                            </span>
+                            <span class="text-[#ffb300] font-bold opacity-0 group-hover:opacity-100 transition duration-150">
+                                استعراض المواد ➔
+                            </span>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML("beforeend", cardHtml);
+            });
+        }
+
+        // 5. Filters & Search Engine
+        function filterCategory(cat) {
+            currentCategoryFilter = cat;
+            document.querySelectorAll(".cat-btn").forEach(btn => {
+                if (btn.getAttribute("data-cat") === cat) {
+                    btn.className = "cat-btn px-3.5 py-2 rounded-xl text-xs font-bold transition duration-200 bg-[#ffb300] text-black shadow-lg shadow-[#ffb300]/10";
+                } else {
+                    btn.className = "cat-btn px-3.5 py-2 rounded-xl text-xs font-bold transition duration-200 bg-stone-900 text-stone-300 hover:bg-stone-800";
+                }
+            });
+            renderEpisodes();
+        }
+
+        function handleSearch() {
+            currentSearchQuery = document.getElementById("search-input").value;
+            renderEpisodes();
+        }
+
+        function handleStatusFilter() {
+            currentStatusFilter = document.getElementById("status-filter").value;
+            renderEpisodes();
+        }
+
+        // 6. Detailed Interactive Inspector Mode
+        function selectEpisode(id) {
+            activeEpisodeId = id;
+            const ep = campaignData.find(e => e.id === id);
+
+            document.getElementById("inspector-empty").classList.add("hidden");
+            const loadedState = document.getElementById("inspector-loaded");
+            loadedState.classList.remove("hidden");
+            loadedState.classList.add("flex");
+
+            // Load data models
+            document.getElementById("insp-title").textContent = ep.title;
+            document.getElementById("insp-cat").textContent = ep.category;
+            document.getElementById("insp-video-link").href = ep.videoLink;
+            document.getElementById("insp-cover").textContent = ep.coverTitle;
+            document.getElementById("insp-caption").textContent = ep.caption;
+            document.getElementById("insp-cta").textContent = ep.cta;
+            document.getElementById("insp-hash").textContent = ep.hashtags;
+            document.getElementById("insp-platforms").textContent = ep.platforms;
+            document.getElementById("insp-datetime").textContent = `${ep.day} (${ep.time})`;
+
+            updateInspectorSwitchUI(ep.status);
+            renderEpisodes();
+        }
+
+        function updateInspectorSwitchUI(status) {
+            const sBtn = document.getElementById("btn-state-sched");
+            const pBtn = document.getElementById("btn-state-pub");
+
+            if (status === "مجدول") {
+                sBtn.className = "px-3 py-1.5 rounded-lg text-[9px] font-bold bg-[#c31212] text-white shadow shadow-[#c31212]/30";
+                pBtn.className = "px-3 py-1.5 rounded-lg text-[9px] font-bold text-stone-400 hover:text-white";
+            } else {
+                sBtn.className = "px-3 py-1.5 rounded-lg text-[9px] font-bold text-stone-400 hover:text-white";
+                pBtn.className = "px-3 py-1.5 rounded-lg text-[9px] font-bold bg-emerald-500 text-black shadow shadow-emerald-500/20";
+            }
+        }
+
+        function changeStatus(newStatus) {
+            if (!activeEpisodeId) return;
+            const ep = campaignData.find(e => e.id === activeEpisodeId);
+            ep.status = newStatus;
+
+            updateInspectorSwitchUI(newStatus);
+            renderStats();
+            renderEpisodes();
+            saveStateToStorage();
+            showToast(`تم تعديل حالة الحلقة ${ep.id} إلى: ${newStatus}`);
+        }
+
+        // 7. Copy Utility Module (Clipboard with IFrame Fallback Safety)
+        function copyFieldText(elementId, labelName) {
+            const element = document.getElementById(elementId);
+            if (!element) return;
+            const textToCopy = element.innerText || element.textContent;
+
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = textToCopy;
+            tempTextArea.style.position = "fixed";
+            tempTextArea.style.top = "0";
+            tempTextArea.style.left = "0";
+            document.body.appendChild(tempTextArea);
+            tempTextArea.focus();
+            tempTextArea.select();
+            
+            try {
+                document.execCommand('copy');
+                showToast(`✅ تم نسخ ${labelName} بنجاح إلى الحافظة!`);
+            } catch (err) {
+                console.error('Copy attempt failed', err);
+            }
+            document.body.removeChild(tempTextArea);
+        }
+
+        // 8. Custom Toast Alerts
+        function showToast(message) {
+            const container = document.getElementById("toast-container");
+            const id = Date.now();
+            const toastHtml = `
+                <div id="toast-${id}" class="bg-[#141212] border border-[#ffb300]/20 text-white text-xs px-4 py-3 rounded-xl shadow-2xl flex items-center justify-between gap-3 transform translate-y-3 opacity-0 transition duration-300 pointer-events-auto max-w-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="text-[#ffb300]">📢</span>
+                        <span class="font-semibold leading-relaxed">${message}</span>
+                    </div>
+                    <button onclick="closeToast(${id})" class="text-stone-500 hover:text-white text-sm">✕</button>
+                </div>
+            `;
+            container.insertAdjacentHTML("beforeend", toastHtml);
+
+            setTimeout(() => {
+                const el = document.getElementById(`toast-${id}`);
+                if (el) {
+                    el.classList.remove("translate-y-3", "opacity-0");
+                }
+            }, 50);
+
+            setTimeout(() => closeToast(id), 4000);
+        }
+
+        function closeToast(id) {
+            const el = document.getElementById(`toast-${id}`);
+            if (el) {
+                el.classList.add("opacity-0", "translate-y-3");
+                setTimeout(() => el.remove(), 300);
+            }
+        }
+
+        // 9. Modal Management for Date Shifting Calendar
+        function openDateShifterModal() {
+            const formatInputDate = selectedStartDate.toISOString().split('T')[0];
+            document.getElementById("new-start-date").value = formatInputDate;
+            document.getElementById("date-shifter-modal").classList.remove("hidden");
+        }
+
+        function closeDateShifterModal() {
+            document.getElementById("date-shifter-modal").classList.add("hidden");
+        }
+
+        function applyDateShift() {
+            const rawVal = document.getElementById("new-start-date").value;
+            if (!rawVal) return;
+
+            const nDate = new Date(rawVal);
+            if (nDate.getDay() !== 4) {
+                showToast("⚠️ تنبيه: التاريخ المختار ليس يوم خميس. تم التطبيق ولكن قد تختلف أيام الأسبوع.");
+            }
+
+            selectedStartDate = nDate;
+            recalculateCampaignDates();
+            saveStateToStorage();
+
+            if (activeEpisodeId) {
+                selectEpisode(activeEpisodeId); // Sync detailed inspector view dates
+            }
+
+            renderEpisodes();
+            closeDateShifterModal();
+            showToast("🚀 تم تحديث روزنامة السلسلة الـ 14 بالكامل تلقائياً!");
+        }
+
+        // 10. Live Countdown System
+        function initCountdown() {
+            setInterval(() => {
+                const now = new Date();
+                
+                // Fetch closest scheduled future episode
+                let nextEp = campaignData
+                    .filter(e => e.status === "مجدول" && e.actualDate > now)
+                    .sort((a,b) => a.actualDate - b.actualDate)[0];
+
+                const timerEl = document.getElementById("countdown-timer");
+                const labelEl = document.getElementById("countdown-label");
+
+                if (!nextEp) {
+                    timerEl.innerHTML = `<span class="text-[#ffb300] text-xs">تم نشر السلسلة كاملة بنجاح! 🏆</span>`;
+                    labelEl.textContent = "الوضع المباشر";
+                    return;
+                }
+
+                let launchTime = new Date(nextEp.actualDate);
+                if (nextEp.time.includes("8:30")) {
+                    launchTime.setHours(20, 30, 0);
+                } else {
+                    launchTime.setHours(21, 0, 0);
+                }
+
+                const diff = launchTime - now;
+
+                if (diff <= 0) {
+                    timerEl.innerHTML = `<span class="text-emerald-400 text-xs animate-pulse">حان وقت بث الحلقة الآن! ➔</span>`;
+                    labelEl.textContent = nextEp.title;
+                    return;
+                }
+
+                labelEl.textContent = `الوقت المتبقي لـ ${nextEp.title}`;
+
+                const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                const secs = Math.floor((diff % (1000 * 60)) / 1000);
+
+                timerEl.innerHTML = `
+                    <span class="text-white font-mono">${days}</span><span class="text-[#ff9f00] text-[10px] font-normal px-0.5"> يوم</span> • 
+                    <span class="text-white font-mono">${hours}</span><span class="text-[#ff9f00] text-[10px] font-normal px-0.5"> س</span> • 
+                    <span class="text-white font-mono">${mins}</span><span class="text-[#ff9f00] text-[10px] font-normal px-0.5"> د</span>
+                `;
+            }, 1000);
+        }
+
+        // 11. State Persistence Engines
+        function saveStateToStorage() {
+            const payload = {
+                startDateStr: selectedStartDate.toISOString(),
+                statuses: campaignData.map(e => ({ id: e.id, status: e.status }))
+            };
+            localStorage.setItem("kabsa_dashboard_state_v2", JSON.stringify(payload));
+        }
+
+        function loadStateFromStorage() {
+            try {
+                const raw = localStorage.getItem("kabsa_dashboard_state_v2");
+                if (raw) {
+                    const parsed = JSON.parse(raw);
+                    selectedStartDate = new Date(parsed.startDateStr);
+                    parsed.statuses.forEach(savedItem => {
+                        const ep = campaignData.find(e => e.id === savedItem.id);
+                        if (ep) ep.status = savedItem.status;
+                    });
+                }
+            } catch (e) {
+                console.error("Storage synchronization failed gracefully", e);
+            }
+        }
+    </script>
+</body>
+</html>
